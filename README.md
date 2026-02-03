@@ -17,27 +17,27 @@ Inter Font:   https://cdn.jsdelivr.net/gh/draftrepo/appdraft-brand-assets@main/f
 
 | Color | Hex | Usage |
 |-------|-----|-------|
-| Primary | `#19779b` | Buttons, links |
-| Primary Hover | `#14698c` | Hover states |
-| Accent | `#f25c54` | CTAs, alerts |
+| Primary (Cyan) | `#3cd6bf` | Buttons, links, accents |
+| Primary Hover | `#2bc4ad` | Hover states |
+| Bright Accent | `#56FFDD` | Footer links, highlights |
 | Background | `#f7f9fb` | Page backgrounds |
 | Border | `#dce3ea` | Dividers |
 | Text | `#1f2d3d` | Main text |
 | Text Muted | `#6b778c` | Secondary text |
-| Logo | `#0b3d52` | Logo color |
+| Dark (CTA) | `#0f172a` | Dark buttons, headers |
 
 ### Quick CSS
 
 ```css
 :root {
-  --appdraft-primary: #19779b;
-  --appdraft-primary-hover: #14698c;
-  --appdraft-accent: #f25c54;
+  --appdraft-primary: #3cd6bf;
+  --appdraft-primary-hover: #2bc4ad;
+  --appdraft-bright: #56FFDD;
   --appdraft-background: #f7f9fb;
   --appdraft-border: #dce3ea;
   --appdraft-text: #1f2d3d;
   --appdraft-text-muted: #6b778c;
-  --appdraft-logo: #0b3d52;
+  --appdraft-dark: #0f172a;
 }
 ```
 
@@ -79,16 +79,32 @@ const BRAND = {
     white: 'https://cdn.jsdelivr.net/gh/draftrepo/appdraft-brand-assets@main/logos/appdraft-logo-white.png'
   },
   colors: {
-    primary: '#19779b',
-    primaryHover: '#14698c',
-    accent: '#f25c54',
+    primary: '#3cd6bf',
+    primaryHover: '#2bc4ad',
+    bright: '#56FFDD',
     background: '#f7f9fb',
     border: '#dce3ea',
     text: '#1f2d3d',
     textMuted: '#6b778c',
-    logo: '#0b3d52'
+    dark: '#0f172a'
   }
 };
+```
+
+### Tailwind CSS (arbitrary values)
+
+```jsx
+// Primary button
+className="bg-[#3cd6bf] hover:bg-[#2bc4ad] text-white"
+
+// Text accent
+className="text-[#3cd6bf]"
+
+// Footer links (dark bg)
+className="text-gray-400 hover:text-[#56FFDD]"
+
+// Dark CTA button
+className="bg-slate-900 hover:bg-slate-800 text-white"
 ```
 
 ## Logo Files Needed

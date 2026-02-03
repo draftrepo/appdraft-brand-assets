@@ -1,12 +1,15 @@
-/* APPDRAFT Brand Colors v1.0.0 */
+/* APPDRAFT Brand Colors v2.0.0 */
+/* Updated: 2026-02-03 */
 
 :root {
-  /* Primary */
-  --appdraft-primary: #19779b;
-  --appdraft-primary-hover: #14698c;
+  /* Primary Cyan */
+  --appdraft-primary: #3cd6bf;
+  --appdraft-primary-hover: #2bc4ad;
+  --appdraft-bright: #56FFDD;
 
-  /* Accent */
-  --appdraft-accent: #f25c54;
+  /* Dark */
+  --appdraft-dark: #0f172a;
+  --appdraft-dark-hover: #1e293b;
 
   /* Backgrounds */
   --appdraft-background: #f7f9fb;
@@ -17,21 +20,18 @@
   /* Text */
   --appdraft-text: #1f2d3d;
   --appdraft-text-muted: #6b778c;
-
-  /* Logo */
-  --appdraft-logo: #0b3d52;
 }
 
 /* Utility Classes */
 .bg-appdraft-primary { background-color: var(--appdraft-primary); }
-.bg-appdraft-accent { background-color: var(--appdraft-accent); }
+.bg-appdraft-dark { background-color: var(--appdraft-dark); }
 .bg-appdraft-background { background-color: var(--appdraft-background); }
 
 .text-appdraft-primary { color: var(--appdraft-primary); }
-.text-appdraft-accent { color: var(--appdraft-accent); }
+.text-appdraft-bright { color: var(--appdraft-bright); }
+.text-appdraft-dark { color: var(--appdraft-dark); }
 .text-appdraft-main { color: var(--appdraft-text); }
 .text-appdraft-muted { color: var(--appdraft-text-muted); }
-.text-appdraft-logo { color: var(--appdraft-logo); }
 
 .border-appdraft { border-color: var(--appdraft-border); }
 
@@ -41,14 +41,29 @@
   color: white;
   border: none;
   padding: 8px 16px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.15s;
+  transition: background-color 0.2s;
 }
 
 .btn-appdraft-primary:hover {
   background-color: var(--appdraft-primary-hover);
+}
+
+.btn-appdraft-dark {
+  background-color: var(--appdraft-dark);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-appdraft-dark:hover {
+  background-color: var(--appdraft-dark-hover);
 }
 
 .btn-appdraft-secondary {
@@ -56,27 +71,34 @@
   color: var(--appdraft-text);
   border: 1px solid var(--appdraft-border);
   padding: 8px 16px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.15s;
+  transition: background-color 0.2s;
 }
 
 .btn-appdraft-secondary:hover {
   background-color: var(--appdraft-border);
 }
 
-.btn-appdraft-accent {
-  background-color: var(--appdraft-accent);
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: opacity 0.15s;
+/* Link Styles */
+.link-appdraft {
+  color: var(--appdraft-primary);
+  text-decoration: none;
+  transition: color 0.2s;
 }
 
-.btn-appdraft-accent:hover {
-  opacity: 0.9;
+.link-appdraft:hover {
+  color: var(--appdraft-primary-hover);
+}
+
+/* For dark backgrounds (footer, etc) */
+.link-appdraft-bright {
+  color: var(--appdraft-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.link-appdraft-bright:hover {
+  color: var(--appdraft-bright);
 }

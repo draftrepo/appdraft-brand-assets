@@ -1,15 +1,18 @@
 {
   "brand": "APPDRAFT",
-  "version": "1.0.0",
+  "version": "2.0.0",
+  "updated": "2026-02-03",
   "colors": {
     "primary": {
-      "default": "#19779b",
-      "hover": "#14698c",
-      "description": "Primary buttons, links, key UI elements"
+      "default": "#3cd6bf",
+      "hover": "#2bc4ad",
+      "bright": "#56FFDD",
+      "description": "Primary cyan - buttons, links, accents, highlights"
     },
-    "accent": {
-      "default": "#f25c54",
-      "description": "Call-to-action buttons, link accents, alerts"
+    "dark": {
+      "default": "#0f172a",
+      "hover": "#1e293b",
+      "description": "Dark slate - CTA buttons, header backgrounds"
     },
     "background": {
       "page": "#f7f9fb",
@@ -23,10 +26,10 @@
       "main": "#1f2d3d",
       "muted": "#6b778c",
       "description": "Primary and secondary text colors"
-    },
-    "logo": {
-      "blue": "#0b3d52",
-      "description": "Logo text color (dark teal)"
     }
+  },
+  "changelog": {
+    "2.0.0": "Updated primary color from teal (#19779b) to vibrant cyan (#3cd6bf). Added bright variant (#56FFDD) for dark backgrounds.",
+    "1.0.0": "Initial brand colors with teal primary"
   }
 }
