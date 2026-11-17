@@ -1,0 +1,17 @@
+<!doctype html>
+<!-- Short (1080x1350) backdrop: static. Video window is composited at x 32, y 300, 1016x571. -->
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="system.css"><style>
+  html, body { width: 1080px; height: 1350px; }
+  .logo { position: absolute; left: 64px; top: 72px; width: 210px; opacity: .92; }
+  .t { position: absolute; left: 64px; top: 136px; font-weight: 600; font-size: 62px; line-height: 1.08; letter-spacing: -.03em; }
+  .t span { color: var(--teal); }
+  .slot { position: absolute; left: 32px; top: 300px; width: 1016px; height: 571px; border-radius: 16px;
+    box-shadow: 0 0 0 1px rgba(255,255,255,.10), 0 40px 90px -20px rgba(0,0,0,.65), 0 10px 26px rgba(0,0,0,.34); background: #fff; }
+  .rail { position: absolute; left: 64px; right: 64px; top: 1262px; height: 2px; background: rgba(243,246,248,.16); }
+</style></head><body>
+  <div class="backdrop"></div>
+  <img class="logo" src="../assets/appdraft-wordmark-white.svg">
+  <div class="t">Salesforce and Xero,<br><span>working as one</span></div>
+  <div class="slot"></div>
+  <div class="rail"></div>
+</body></html>

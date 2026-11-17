@@ -1,0 +1,37 @@
+<!doctype html>
+<!-- End card, the same on every AppDraft demo film: AppDraft · Getting more out of Salesforce · appdraft.com
+     The last screen sinks away, the line from the title sequence returns already joined, and the
+     sign-off rises in time with the voice. Fades to black at the very end.
+     Query: len (8), title ("Getting more|out of Salesforce"), url (appdraft.com), from (image: last frame),
+            titleat (1.1) urlat (2.6): seconds into the card, set them to when the words are spoken,
+            prevname + n + of: the footer marker it leaves -->
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="system.css"><style>
+  .logo { position: absolute; left: var(--margin); top: 296px; width: 330px; }
+  .rail { position: absolute; top: 416px; height: 2px; background: rgba(243,246,248,.30); }
+  .rail.l { left: 0; width: 868px; transform-origin: left center; }
+  .rail.r { left: 1052px; right: 0; transform-origin: right center; }
+  .join { position: absolute; top: 415px; left: 868px; width: 184px; height: 4px; border-radius: 2px; background: var(--teal); transform-origin: center; }
+  .text { position: absolute; left: var(--margin); top: 486px; }
+  .url { margin: 44px 0 0 5px; font-weight: 600; font-size: 44px; letter-spacing: -.015em; color: var(--teal); }
+  .rail { animation: drawx .9s var(--draw) .3s both; }
+  .join { animation: drawx .6s var(--move) 1.0s both; }
+  #from { animation: win-out .5s var(--exit) 0s both; }
+  .footer { animation: gone .3s linear .1s forwards; }
+</style></head><body>
+  <div class="backdrop"></div>
+  <img class="logo a-up" style="--d:.55s" src="../assets/appdraft-wordmark-white.svg">
+  <div class="rail l"></div><div class="rail r"></div><div class="join"></div>
+  <div class="text"><div class="display" id="title"></div><div class="url a-up" id="url"></div></div>
+  <div class="window" id="from"><img id="fromimg"></div>
+  <div class="footer" id="footer"><div class="marker"><div class="ticks" id="ticks"></div><span id="prevname"></span></div>
+    <img class="mark" src="../assets/appdraft-wordmark-white.svg"></div>
+  <div class="black" id="black"></div>
+<script src="system.js"></script><script>
+  const len = N("len", 8);
+  lines(document.getElementById("title"), P("title", "Getting more|out of Salesforce"), N("titleat", 1.1), .11);
+  fill("url", "url", "appdraft.com").style.setProperty("--d", N("urlat", 2.6) + "s");
+  ticks(document.getElementById("ticks"), N("n", 4), N("of", 4)); fill("prevname", "prevname", "");
+  const f = P("from"); if (f) document.getElementById("fromimg").src = f;
+  else { document.getElementById("from").style.display = "none"; document.getElementById("footer").style.display = "none"; }
+  blackout(len, f ? 0 : .45, .8);
+</script></body></html>

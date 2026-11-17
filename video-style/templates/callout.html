@@ -1,0 +1,96 @@
+<!doctype html>
+<!-- Callouts over the screen recording. Rendered with a TRANSPARENT background at 1600x900
+     (the recording's own pixel space, so x and y are read straight off a dry-run still),
+     then composited onto the footage by the edit. One render can carry several items.
+     Query: len (seconds), scale (2 = render at 3200x1800 for a sharper zoom; set w and h to match),
+            bg (image under it, previews only), spec = JSON list of items:
+       {"type":"lower","text":"Payments come back on their own","kicker":"optional small line"}
+       {"type":"chip","x":1180,"y":212,"text":"Posted to Xero","dir":"down","lead":46,"align":"left"}
+       {"type":"value","x":560,"y":262,"label":"Xero invoice number","value":"INV-0412","dir":"down"}
+       {"type":"focus","x":520,"y":228,"w":300,"h":64,"tone":"teal"}          (tone: teal | amber)
+     Every item also takes "in" and "out" (seconds; default 0 and len - 0.45).
+     dir: where the plate sits relative to the target (up | down | left | right). -->
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="system.css"><style>
+  html, body { width: 1600px; height: 900px; background: transparent; }
+  #bg { position: absolute; inset: 0; width: 1600px; height: 900px; display: none; }
+  .it { position: absolute; }
+  .plate { background: rgba(11,20,29,.93); box-shadow: 0 0 0 1px rgba(243,246,248,.13), 0 18px 44px -10px rgba(5,10,16,.55), 0 3px 10px rgba(5,10,16,.3); color: var(--paper); white-space: nowrap; }
+
+  /* lower: the scene's one-line statement, bottom left of the window */
+  .lower { left: 36px; bottom: 36px; }
+  .lower .plate { border-radius: 12px; padding: 17px 26px 18px 28px; position: relative; overflow: hidden; }
+  .lower .bar { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--teal); transform-origin: top; }
+  .lower .kicker { font-weight: 600; font-size: 14px; letter-spacing: .16em; text-transform: uppercase; color: var(--teal); margin-bottom: 7px; }
+  .lower .text { font-weight: 600; font-size: 27px; letter-spacing: -.012em; }
+
+  /* chip and value: a plate tied to a point on the screen by a short leader */
+  .dot { position: absolute; left: -7px; top: -7px; width: 14px; height: 14px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 0 3px rgba(11,20,29,.9); }
+  .ping { position: absolute; left: -7px; top: -7px; width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 0 2px var(--teal); }
+  .lead { position: absolute; background: var(--teal); box-shadow: 0 0 0 1px rgba(11,20,29,.55); }
+  .tied .plate { position: absolute; }
+  .chip .plate { border-radius: 999px; padding: 11px 22px 11px 12px; display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 23px; letter-spacing: -.008em; }
+  .chip svg { width: 28px; height: 28px; display: block; }
+  .value .plate { border-radius: 12px; padding: 15px 24px 16px; }
+  .value .label { font-weight: 600; font-size: 14px; letter-spacing: .16em; text-transform: uppercase; color: var(--mist); margin-bottom: 6px; }
+  .value .val { font-weight: 600; font-size: 40px; letter-spacing: -.025em; line-height: 1.05; }
+
+  /* focus: everything but one field steps back */
+  .focus { border-radius: 9px; box-shadow: 0 0 0 3000px rgba(11,20,29,.46); }
+  .focus .ring { position: absolute; inset: -3px; border-radius: 11px; border: 3px solid var(--teal); }
+  .focus.amber .ring { border-color: var(--amber); }
+
+  @keyframes wipe   { from { clip-path: inset(-40px 100% -40px -40px); } to { clip-path: inset(-40px -40px -40px -40px); } }
+  @keyframes drawy  { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  @keyframes pop    { from { opacity: 0; transform: scale(.4); } to { opacity: 1; transform: none; } }
+  @keyframes ping   { from { opacity: .9; transform: scale(1); } to { opacity: 0; transform: scale(3.4); } }
+  @keyframes grow   { from { transform: var(--g0); } to { transform: none; } }
+  @keyframes plate  { from { opacity: 0; transform: var(--p0); } to { opacity: 1; transform: none; } }
+  @keyframes tick   { from { stroke-dashoffset: 16; } to { stroke-dashoffset: 0; } }
+  @keyframes ring   { from { opacity: 0; transform: scale(1.07); } to { opacity: 1; transform: none; } }
+  @keyframes textin { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
+
+  .it { animation: gone .3s linear var(--out) forwards; }
+  .lower .plate { animation: wipe .7s var(--enter) var(--in) both; }
+  .lower .bar { animation: drawy .5s var(--draw) calc(var(--in) + .1s) both; }
+  .lower .text, .lower .kicker { animation: textin .7s var(--enter) calc(var(--in) + .14s) both; }
+  .dot { animation: pop .45s var(--enter) var(--in) both; }
+  .ping { animation: ping .9s var(--enter) calc(var(--in) + .1s) both; }
+  .lead { animation: grow .4s var(--draw) calc(var(--in) + .15s) both; }
+  .tied .plate { animation: plate .6s var(--enter) calc(var(--in) + .38s) both; }
+  .chip path { stroke-dasharray: 16; animation: tick .4s var(--draw) calc(var(--in) + .75s) both; }
+  .focus { animation: fade .45s linear var(--in) both, gone .3s linear var(--out) forwards; }
+  .focus .ring { animation: ring .6s var(--enter) calc(var(--in) + .1s) both; }
+</style></head><body>
+  <img id="bg">
+<script src="system.js"></script><script>
+  if (N("scale", 1) !== 1) document.documentElement.style.zoom = N("scale", 1);
+  const len = N("len", 4), spec = JSON.parse(P("spec", "[]"));
+  if (P("bg")) { const b = document.getElementById("bg"); b.src = P("bg"); b.style.display = "block"; }
+  const TICK = '<svg viewBox="0 0 28 28"><circle cx="14" cy="14" r="14" fill="#3cd6bf"/><path d="M8 14.6l4.2 4.1 8-8.4" fill="none" stroke="#0b141d" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const GAP = 12;   // dot to leader
+  for (const s of spec) {
+    const el = document.createElement("div"); el.className = "it " + s.type;
+    el.style.setProperty("--in", (s.in ?? 0) + "s"); el.style.setProperty("--out", (s.out ?? len - .45) + "s");
+    if (s.type === "lower") {
+      el.innerHTML = `<div class="plate"><div class="bar"></div>${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ""}<div class="text">${s.text}</div></div>`;
+    } else if (s.type === "focus") {
+      if (s.tone === "amber") el.classList.add("amber");
+      Object.assign(el.style, { left: s.x + "px", top: s.y + "px", width: s.w + "px", height: s.h + "px" });
+      el.innerHTML = '<div class="ring"></div>';
+    } else {
+      el.classList.add("tied"); Object.assign(el.style, { left: s.x + "px", top: s.y + "px" });
+      const dir = s.dir || "up", L = s.lead ?? 44, align = s.align || "left", far = GAP + L;
+      const lead = { up: `left:-1px;bottom:${GAP}px;width:2px;height:${L}px;transform-origin:bottom;--g0:scaleY(0)`,
+                     down: `left:-1px;top:${GAP}px;width:2px;height:${L}px;transform-origin:top;--g0:scaleY(0)`,
+                     left: `right:${GAP}px;top:-1px;height:2px;width:${L}px;transform-origin:right;--g0:scaleX(0)`,
+                     right: `left:${GAP}px;top:-1px;height:2px;width:${L}px;transform-origin:left;--g0:scaleX(0)` }[dir];
+      // where the plate hangs off the end of the leader
+      const side = align === "left" ? "left:-30px" : align === "right" ? "right:-30px" : "left:50%;margin-left:-50%";
+      const plate = { up: `${side};bottom:${far}px;--p0:translateY(10px)`, down: `${side};top:${far}px;--p0:translateY(-10px)`,
+                      left: `right:${far}px;top:0;margin-top:-28px;--p0:translateX(10px)`, right: `left:${far}px;top:0;margin-top:-28px;--p0:translateX(-10px)` }[dir];
+      const inner = s.type === "chip" ? TICK + `<span>${s.text}</span>` : `<div class="label">${s.label}</div><div class="val">${s.value}</div>`;
+      el.innerHTML = `<div class="ping"></div><div class="dot"></div><div class="lead" style="${lead}"></div><div class="plate" style="${plate}">${inner}</div>`;
+    }
+    document.body.appendChild(el);
+  }
+</script></body></html>

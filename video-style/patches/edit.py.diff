@@ -1,0 +1,162 @@
+--- /Users/adamwonnacott/.claude/plugins/synced/690a10e6-4364-41ca-994b-7143f82f7245_b0c67717-78c4-4316-a0ff-5a0c0e049578/sf-devops~g4/skills/demo-video/scripts/edit.py	1980-01-01 00:00:00
++++ edit_flagship.py	2026-11-15 18:43:54
+@@ -30,12 +30,29 @@
+   hold_zoom    optional, zoom gained per second of hold (default 0.012; 0 turns it off)
+   audio_filter optional ffmpeg audio chain before levelling
+   fade_out     optional, true to fade video and audio out at the end (long mode)
++
++Flagship additions (all optional; without them the output is as before):
++  canvas       [w, h] of the output video (default [1920, 1080]). The flagship film uses
++               [1664, 936]: the size of the window the assembler places it in.
++  fade_in      seconds of fade from black at the start (default 1 long, 0.4 short; 0 = none)
++  transitions  {beat: "cut" | "dissolve" | "push" | "through" | ["through", x, y]}
++               how that beat ARRIVES (see transitions.py). x, y: the point the camera
++               pushes into, in 1600x900 source pixels.
++  overlays     [{"beat": "post", "frames": "gfx/post", "at": 0.4, "from": "hold" | "start",
++                 "space": "source" | "screen"}]
++               a folder of transparent PNG frames (callout.html, 30 fps) laid over the
++               footage, starting `at` seconds after the beat's action lands ("hold", the
++               default) or after the beat starts. "source" (default) is pinned to the
++               page, so it moves and grows with any zoom; "screen" ignores the zoom.
++Also writes <out>.timeline.json (each beat's slot and hold times) for assemble.py.
+ """
+ import bisect, json, math, os, shutil, subprocess, sys
+ from PIL import Image
+ 
+ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++sys.path.insert(0, os.environ.get("DEMO_VIDEO_SCRIPTS", os.path.dirname(os.path.abspath(__file__))))
+ from common import change_times, ffmpeg, tighten_ranges
++import transitions as T
+ 
+ CFG_PATH = os.path.abspath(sys.argv[1])
+ D = os.path.dirname(CFG_PATH)
+@@ -53,6 +70,10 @@
+ KEEP = cfg.get("keep_still", 1.1)
+ HOLD_RATE = cfg.get("hold_zoom", 0.012)
+ HOLD_MIN = 1.2   # holds shorter than this need no zoom
++CANVAS = tuple(cfg.get("canvas", [1920, 1080]))
++FADE_IN = cfg.get("fade_in", 1 if MODE == "long" else 0.4)
++TRANS = cfg.get("transitions", {})
++OVERLAYS = cfg.get("overlays", [])
+ 
+ cues = json.load(open(P(cfg["cues"])))
+ cues.update(cfg.get("overrides", {}))
+@@ -106,6 +127,31 @@
+     print(f"{b['name']:10s} at {b['slot0']:7.2f}s  slot {avail:5.1f}s  action {b['dur']:5.1f}s{trim}  "
+           f"hold {max(b['hold'], 0):4.1f}s  speed {b['speed']:.2f}{flag}")
+ 
++# Overlays: when each starts on the output clock, and its frames in order.
++by_name = {b["name"]: b for b in beats}
++for o in OVERLAYS:
++    ob = by_name[o["beat"]]
++    o["t0"] = (ob["slot0"] if o.get("from") == "start" else ob["hold_at"]) + o.get("at", 0.0)
++    o["files"] = sorted(os.path.join(P(o["frames"]), n) for n in os.listdir(P(o["frames"])) if n.endswith(".png"))
++    late = o["t0"] + len(o["files"]) / FPS - ob["slot1"]
++    print(f"overlay {o['frames']:24s} on {o['beat']:10s} {o['t0']:7.2f}s for {len(o['files']) / FPS:4.1f}s"
++          + (f"  <-- runs {late:.1f}s past its beat" if late > 0.05 else ""))
++
++def overlays_at(k):
++    """(png, space) for every overlay showing on output frame k."""
++    hit = []
++    for o in OVERLAYS:
++        i = k - int(round(o["t0"] * FPS))
++        if 0 <= i < len(o["files"]):
++            hit.append((o["files"][i], o.get("space", "source")))
++    return hit
++
++def trans_of(name):
++    spec = TRANS.get(name, "dissolve")
++    if isinstance(spec, list):
++        return spec[0], tuple(spec[1:3])
++    return spec, None
++
+ frame_times = {r: [f["t"] / 1000 for f in runs[r][1]] for r in runs}
+ def frame_at(run, t):
+     ts = frame_times[run]
+@@ -182,7 +228,7 @@
+ 
+ # One working folder per config, so long.json and short.json in the same folder can run at once.
+ work = os.path.join(D, "_edit-" + os.path.splitext(os.path.basename(CFG_PATH))[0]); shutil.rmtree(work, ignore_errors=True)
+-os.makedirs(os.path.join(work, "blend")); os.makedirs(os.path.join(work, "zoom"))
++os.makedirs(os.path.join(work, "blend")); os.makedirs(os.path.join(work, "zoom")); os.makedirs(os.path.join(work, "over"))
+ zoom_cache, entries, bi = {}, [], 0
+ for k in range(int(end_t * FPS)):
+     t = k / FPS
+@@ -192,23 +238,49 @@
+     local = t - b["slot0"]
+     st, ri, into_range = source(b, local)
+     f = frame_at(b["run"], st)
+-    prev, since = None, 0
++    prev, since, kind, focus = None, 0, "dissolve", None
+     if ri > 0:
+         prev, since = frame_at(b["run"], b["ranges"][ri - 1][1]), into_range
+-    elif bi > 0 and beats[bi - 1]["run"] != b["run"]:
++    elif bi > 0 and (b["name"] in TRANS or beats[bi - 1]["run"] != b["run"]):
++        # A beat arrives with a transition when the config names one, or (as before) with a
++        # dissolve when it comes from a different recording.
+         pb = beats[bi - 1]
+         prev, since = frame_at(pb["run"], pb["ranges"][-1][1]), local
+-    if prev and 0 <= since < DISSOLVE and prev != f:
++        kind, focus = trans_of(b["name"])
++    dur = DISSOLVE if kind == "dissolve" else T.DUR[kind]
++    if prev and dur > 0 and 0 <= since < dur and prev != f:
+         out = os.path.join(work, "blend", f"{k:06d}.jpg")
+-        Image.blend(Image.open(prev).convert("RGB"), Image.open(f).convert("RGB"), since / DISSOLVE).save(out, quality=92)
++        T.transition(kind, Image.open(prev), Image.open(f), since / dur, focus).save(out, quality=95)
+         f = out
+     box = zoom_at(b, t)
+-    if box:
++    over = overlays_at(k)
++    if over:
++        # Callouts: scale the footage to the canvas (through the zoom if there is one), then
++        # lay each overlay on. A "source" overlay goes through the same zoom, so it stays
++        # pinned to the page; a "screen" overlay is laid on flat.
++        im = Image.open(f).convert("RGB")
++        if box:
++            x0, y0, w, h = box
++            im = im.resize(CANVAS, Image.LANCZOS, box=(x0, y0, x0 + w, y0 + h))
++        elif im.size != CANVAS:
++            im = im.resize(CANVAS, Image.LANCZOS)
++        for png, space in over:
++            ov = Image.open(png).convert("RGBA").convert("RGBa")     # premultiplied: no dark fringe when resized
++            s = ov.width / W0
++            if space == "source" and box:
++                ov = ov.resize(CANVAS, Image.LANCZOS, box=(x0 * s, y0 * s, (x0 + w) * s, (y0 + h) * s))
++            elif ov.size != CANVAS:
++                ov = ov.resize(CANVAS, Image.LANCZOS)
++            ov = ov.convert("RGBA")
++            im.paste(ov, (0, 0), ov)
++        f = os.path.join(work, "over", f"{k:06d}.jpg")
++        im.save(f, quality=95)
++    elif box:
+         key = (f, box)
+         if key not in zoom_cache:
+             x0, y0, w, h = box
+             out = os.path.join(work, "zoom", f"{k:06d}.jpg")
+-            Image.open(f).convert("RGB").resize((W0, H0), Image.LANCZOS, box=(x0, y0, x0 + w, y0 + h)).save(out, quality=92)
++            Image.open(f).convert("RGB").resize(CANVAS, Image.LANCZOS, box=(x0, y0, x0 + w, y0 + h)).save(out, quality=95)
+             zoom_cache[key] = out
+         f = zoom_cache[key]
+     if entries and entries[-1][0] == f:
+@@ -224,7 +296,9 @@
+     fh.write(f"file '{entries[-1][0]}'\n")
+ print("length", round(end_t, 1), "s")
+ 
+-vf = f"fps={FPS},scale=1920:1080:flags=lanczos,format=yuv420p,fade=t=in:st=0:d={1 if MODE == 'long' else 0.4}"
++vf = f"fps={FPS},scale={CANVAS[0]}:{CANVAS[1]}:flags=lanczos,setsar=1,format=yuv420p"
++if FADE_IN > 0:
++    vf += f",fade=t=in:st=0:d={FADE_IN}"
+ if cfg.get("audio"):
+     audio_in = ["-i", P(cfg["audio"])]
+     af = cfg.get("audio_filter", "highpass=f=80") + ",loudnorm=I=-16:TP=-1.5:LRA=11," + f"apad,atrim=0:{end_t:.2f}"
+@@ -238,3 +312,10 @@
+                 "-vf", vf, "-af", af, "-c:v", "libx264", "-preset", "slow", "-crf", "18", "-c:a", "aac", "-b:a", "192k",
+                 "-ar", "48000", "-t", f"{end_t:.2f}", "-movflags", "+faststart", P(cfg["out"])], check=True)
+ print("wrote", P(cfg["out"]))
++
++# For assemble.py: where every beat sits on this video's clock.
++tl = os.path.splitext(P(cfg["out"]))[0] + ".timeline.json"
++json.dump({"fps": FPS, "length": round(end_t, 3), "voice_end": cues["end"], "canvas": list(CANVAS),
++           "beats": [{"name": b["name"], "start": round(b["slot0"], 3), "hold_at": round(b["hold_at"], 3),
++                      "end": round(b["slot1"], 3)} for b in beats]}, open(tl, "w"), indent=1)
++print("wrote", tl)

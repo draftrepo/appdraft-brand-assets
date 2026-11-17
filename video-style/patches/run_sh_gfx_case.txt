@@ -1,0 +1,21 @@
+# Add to run.sh's case block (and "gfx.ts" to the cp line under `setup`, and one line to the header comment):
+#   demo-video gfx <template> <out_dir> <seconds> [alpha=1 still=1 w=1600 h=900 page=NAME] key=value ...
+#   e.g. demo-video gfx part.html /abs/gfx/part-2 3.8 n=2 title="Money coming in" from=/abs/stills/part-2-from.png to=/abs/stills/part-2-to.png
+#        demo-video gfx callout.html /abs/gfx/post 5 alpha=1 w=1600 h=900 spec='[{"type":"chip",...}]'
+#        demo-video gfx stage.html /abs/gfx/cover-2 1 alpha=1 still=1 hole=1 n=2 partname="Money coming in"
+  gfx)
+    [ $# -ge 3 ] || die "usage: demo-video gfx <template.html> <out_dir> <seconds> [alpha=1 still=1 w= h= page=] key=value ..."
+    exec "$(PY)" - "$SCRIPTS" "$@" <<'PYEOF'
+import sys
+sys.path.insert(0, sys.argv[1])
+from common import render_gfx
+template, out, length = sys.argv[2], sys.argv[3], float(sys.argv[4])
+kv = dict(a.split("=", 1) for a in sys.argv[5:])
+opt = {k: kv.pop(k, "") for k in ("alpha", "still", "w", "h", "page")}
+render_gfx(template, out, length, kv, alpha=bool(opt["alpha"]), still=bool(opt["still"]),
+           size=(int(opt["w"] or 1920), int(opt["h"] or 1080)), page=opt["page"] or "gfx")
+print("gfx", out)
+PYEOF
+    ;;
+  assemble) export FFMPEG=$(ffmpeg_bin); exec "$(PY)" "$SCRIPTS/assemble.py" "$@";;
+  captions-flagship) exec "$(PY)" "$SCRIPTS/captions_flagship.py" "$@";;

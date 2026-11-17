@@ -1,0 +1,46 @@
+<!doctype html>
+<!-- Part card: an interstitial between parts. The outgoing screen sinks away, the part's
+     number and name rise on the same backdrop, then the incoming screen rises into the window.
+     It starts and ends on the exact stage the footage sits in, so both joins are plain cuts.
+     Query: len (3.8), n (2), of (4), title, sub, from (image: last frame before the card),
+            to (image: first frame after it), prevname (footer marker it leaves) -->
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="system.css"><style>
+  .num { position: absolute; left: var(--margin); top: 356px; font-weight: 600; font-size: 30px; letter-spacing: .06em; color: var(--teal); white-space: nowrap; }
+  .num em { font-style: normal; color: var(--faint); margin-left: 10px; }
+  .segs { position: absolute; left: var(--margin); right: var(--margin); top: 415px; display: flex; gap: 14px; }
+  .segs i { flex: 1; height: 2px; background: rgba(243,246,248,.26); transform-origin: left center; animation: drawx .8s var(--draw) both; }
+  .segs i.done { background: rgba(243,246,248,.52); }
+  .segs i.on { height: 4px; margin-top: -1px; border-radius: 2px; background: var(--teal); }
+  .text { position: absolute; left: var(--margin); top: 486px; }
+  .body { margin: 34px 0 0 4px; max-width: 1500px; }
+  .grp { animation: away .38s var(--exit) var(--o) forwards; }
+  #from { animation: win-out .5s var(--exit) 0s both; }
+  #to   { animation: win-in .85s var(--enter) var(--w) both; }
+  #old  { animation: gone .3s linear .1s forwards; }
+  #new  { animation: fade .45s linear var(--f) both; }
+</style></head><body>
+  <div class="backdrop"></div>
+  <div class="grp">
+    <div class="num a-up" style="--d:.3s"><span id="n"></span><em id="of"></em></div>
+    <div class="segs" id="segs"></div>
+    <div class="text"><div class="display" id="title"></div><div class="body a-up" id="sub" style="--d:.75s"></div></div>
+  </div>
+  <div class="window" id="from"><img id="fromimg"></div>
+  <div class="window" id="to"><img id="toimg"></div>
+  <div class="footer">
+    <div class="marker" id="old"><div class="ticks" id="oldticks"></div><span id="prevname"></span></div>
+    <div class="marker" id="new"><div class="ticks" id="newticks"></div><span id="newname"></span></div>
+    <img class="mark" src="../assets/appdraft-wordmark-white.svg"></div>
+<script src="system.js"></script><script>
+  const len = N("len", 3.8), n = N("n", 2), of = N("of", 4), root = document.documentElement.style;
+  root.setProperty("--o", (len - 1.05) + "s"); root.setProperty("--w", (len - .85) + "s"); root.setProperty("--f", (len - .6) + "s");
+  document.getElementById("n").textContent = String(n).padStart(2, "0");
+  document.getElementById("of").textContent = "/ " + String(of).padStart(2, "0");
+  const title = P("title", "Money coming in");
+  lines(document.getElementById("title"), title, .4, .1); fill("sub", "sub");
+  const segs = document.getElementById("segs");
+  for (let i = 1; i <= of; i++) { const s = document.createElement("i"); if (i < n) s.className = "done"; if (i === n) s.className = "on"; s.style.animationDelay = (.2 + i * .08) + "s"; segs.appendChild(s); }
+  ticks(document.getElementById("oldticks"), n - 1, of); fill("prevname", "prevname", "");
+  ticks(document.getElementById("newticks"), n, of); document.getElementById("newname").innerHTML = title.replace("|", " ");
+  for (const k of ["from", "to"]) { const v = P(k); if (v) document.getElementById(k + "img").src = v; else document.getElementById(k).style.display = "none"; }
+</script></body></html>

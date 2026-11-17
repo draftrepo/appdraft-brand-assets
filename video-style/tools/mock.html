@@ -1,0 +1,66 @@
+<!doctype html>
+<!-- STAND-IN FOOTAGE ONLY. A neutral, made-up record page and dashboard at 1600x900 so the
+     graphics can be reviewed over something that looks like a screen recording.
+     Never used in the film. ?v=deal | invoice | dash -->
+<html><head><meta charset="utf-8"><style>
+@font-face { font-family: Inter; font-weight: 500; src: url(../assets/fonts/Inter-500.ttf); }
+@font-face { font-family: Inter; font-weight: 600; src: url(../assets/fonts/Inter-600.ttf); }
+@font-face { font-family: Inter; font-weight: 700; src: url(../assets/fonts/Inter-700.ttf); }
+html,body{margin:0;width:1600px;height:900px;overflow:hidden;background:#f1f3f6;font-family:Inter,Arial;color:#1b2430;font-weight:500;font-size:14px}
+.top{height:52px;background:#fff;border-bottom:1px solid #dfe3e8;display:flex;align-items:center;padding:0 22px;gap:18px}
+.top .dot{width:26px;height:26px;border-radius:7px;background:#e6492d}
+.top .app{font-weight:700;font-size:16px}
+.top .search{margin-left:260px;width:520px;height:32px;border:1px solid #d5dae0;border-radius:6px;background:#f7f8fa}
+.nav{height:42px;background:#fff;border-bottom:3px solid #e6492d;display:flex;align-items:center;padding:0 22px;gap:30px;font-size:14px;color:#44505e}
+.nav b{color:#1b2430;border-bottom:3px solid #e6492d;padding:11px 0 8px}
+.page{padding:16px 22px}
+.card{background:#fff;border:1px solid #dfe3e8;border-radius:8px}
+.head{display:flex;align-items:center;gap:14px;padding:16px 20px}
+.ico{width:38px;height:38px;border-radius:8px;background:#f59f3a}
+.head small{display:block;color:#6a7685;font-size:12px}.head h1{margin:2px 0 0;font-size:20px;font-weight:700}
+.btns{margin-left:auto;display:flex;gap:8px}.btn{border:1px solid #c9cfd6;border-radius:6px;padding:8px 14px;font-weight:600;color:#1b5fa8;background:#fff}
+.btn.p{background:#1b5fa8;color:#fff;border-color:#1b5fa8}
+.facts{display:flex;gap:56px;padding:0 20px 16px 72px}.facts div small{display:block;color:#6a7685;font-size:12px;margin-bottom:3px}.facts b{font-weight:600;font-size:15px}
+.path{display:flex;gap:4px;margin:14px 0}.path span{flex:1;text-align:center;padding:9px 0;background:#e3e7ec;color:#44505e;font-weight:600;font-size:13px;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,0 100%,12px 50%)}
+.path span.d{background:#2f8f6b;color:#fff}.path span.c{background:#16436e;color:#fff}
+.cols{display:grid;grid-template-columns:1fr 430px;gap:16px}
+.tabs{display:flex;gap:26px;padding:0 20px;border-bottom:1px solid #dfe3e8;font-weight:600;color:#44505e}.tabs span{padding:13px 0}.tabs .on{color:#1b2430;border-bottom:3px solid #1b5fa8}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 48px;padding:14px 20px 20px}
+.f{border-bottom:1px solid #e6e9ed;padding:11px 0}.f small{display:block;color:#6a7685;font-size:12px;margin-bottom:4px}.f b{font-weight:500;font-size:15px}
+.pill{display:inline-block;padding:3px 10px;border-radius:20px;background:#dff3ea;color:#17694b;font-weight:600;font-size:13px}
+table{width:100%;border-collapse:collapse}th{text-align:left;color:#6a7685;font-size:12px;font-weight:600;padding:10px 20px;background:#f7f8fa;border-bottom:1px solid #dfe3e8}td{padding:11px 20px;border-bottom:1px solid #eceff2}td.r,th.r{text-align:right}
+.side h3{margin:0;padding:15px 18px;font-size:15px;border-bottom:1px solid #dfe3e8}
+.kp{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}.k{padding:18px 20px}.k small{color:#6a7685;font-size:13px;font-weight:600}.k b{display:block;font-size:34px;font-weight:700;margin-top:8px;letter-spacing:-.02em}.k i{font-style:normal;color:#6a7685;font-size:13px}
+.bars{display:flex;align-items:flex-end;gap:14px;height:300px;padding:24px 24px 0}.bars u{flex:1;background:#2b7fb8;border-radius:4px 4px 0 0;text-decoration:none}.bars u.f2{background:#a9cbe3}
+</style></head><body>
+<div class="top"><div class="dot"></div><div class="app">Brightline</div><div class="search"></div></div>
+<div class="nav"><span>Finance</span><span>Accounts</span><b id="navon">Opportunities</b><span>Invoices</span><span>Purchase Orders</span><span>Xero Admin</span></div>
+<div class="page" id="page"></div>
+<script>
+const v = new URLSearchParams(location.search).get("v") || "deal";
+const F = (l, x) => `<div class="f"><small>${l}</small><b>${x}</b></div>`;
+const pg = document.getElementById("page");
+if (v === "deal") pg.innerHTML = `
+ <div class="card"><div class="head"><div class="ico"></div><div><small>Opportunity</small><h1>Harlow Dental: boiler servicing contract</h1></div>
+ <div class="btns"><div class="btn">Edit</div><div class="btn p">Create Xero Invoice</div></div></div>
+ <div class="facts"><div><small>Account</small><b>Harlow Dental Group</b></div><div><small>Close date</small><b>12 Nov 2026</b></div><div><small>Amount</small><b>£8,400.00</b></div><div><small>Owner</small><b>Priya Nair</b></div></div></div>
+ <div class="path"><span class="d">Qualify</span><span class="d">Propose</span><span class="d">Negotiate</span><span class="c">Closed Won</span></div>
+ <div class="cols"><div class="card"><div class="tabs"><span class="on">Details</span><span>Products</span><span>Xero Invoices</span><span>Activity</span></div>
+ <div class="grid">${F("Opportunity name","Harlow Dental: boiler servicing contract")}${F("Stage",'<span class="pill">Closed Won</span>')}${F("Account","Harlow Dental Group")}${F("Amount","£8,400.00")}${F("Billing contact","Sam Okafor")}${F("Invoiced","£0.00")}${F("Type","New business")}${F("Paid","£0.00")}${F("Lead source","Referral")}${F("Next step","Raise invoice")}</div></div>
+ <div class="card side"><h3>Products (3)</h3><table><tr><td>Annual boiler service</td><td class="r">£4,200.00</td></tr><tr><td>Call-out cover</td><td class="r">£2,700.00</td></tr><tr><td>Parts allowance</td><td class="r">£1,500.00</td></tr></table></div></div>`;
+if (v === "invoice") { document.getElementById("navon").textContent = "Opportunities"; pg.innerHTML = `
+ <div class="card"><div class="head"><div class="ico" style="background:#2f8f6b"></div><div><small>Xero Invoice</small><h1>Harlow Dental Group: INV-0412</h1></div>
+ <div class="btns"><div class="btn">Send</div><div class="btn">Raise Credit Note</div><div class="btn">Send Statement</div></div></div>
+ <div class="facts"><div><small>Status</small><b><span class="pill">Authorised</span></b></div><div><small>Xero number</small><b>INV-0412</b></div><div><small>Total</small><b>£10,080.00</b></div><div><small>Amount due</small><b>£10,080.00</b></div><div><small>Due date</small><b>12 Dec 2026</b></div></div></div>
+ <div class="path"><span class="d">Draft</span><span class="c">Authorised</span><span>Sent</span><span>Paid</span></div>
+ <div class="cols"><div class="card"><div class="tabs"><span class="on">Lines</span><span>Payments</span><span>Credit Notes</span><span>Sync Log</span></div>
+ <table><tr><th>Description</th><th class="r">Qty</th><th class="r">Unit price</th><th class="r">Tax</th><th class="r">Amount</th></tr>
+ <tr><td>Annual boiler service</td><td class="r">1</td><td class="r">£4,200.00</td><td class="r">20%</td><td class="r">£4,200.00</td></tr>
+ <tr><td>Call-out cover</td><td class="r">1</td><td class="r">£2,700.00</td><td class="r">20%</td><td class="r">£2,700.00</td></tr>
+ <tr><td>Parts allowance</td><td class="r">1</td><td class="r">£1,500.00</td><td class="r">20%</td><td class="r">£1,500.00</td></tr></table></div>
+ <div class="card side"><h3>Details</h3><div style="padding:4px 18px 14px">${F("Account","Harlow Dental Group")}${F("Opportunity","Boiler servicing contract")}${F("Currency","GBP")}${F("Last synced","Just now")}</div></div></div>`; }
+if (v === "dash") { document.getElementById("navon").textContent = "Opportunities"; document.querySelector(".nav b").outerHTML = "<span>Opportunities</span>"; document.querySelector(".nav span").outerHTML = "<b>Finance</b>"; pg.innerHTML = `
+ <div class="kp"><div class="card k"><small>Owed to us</small><b>£84,210</b><i>42 invoices</i></div><div class="card k"><small>Overdue</small><b style="color:#b3401f">£18,960</b><i>9 invoices</i></div><div class="card k"><small>We owe suppliers</small><b>£22,405</b><i>14 bills</i></div><div class="card k"><small>Due in 30 days</small><b>£41,700</b><i>forecast</i></div></div>
+ <div class="cols"><div class="card"><div class="side"><h3>Cash forecast, next 13 weeks</h3></div><div class="bars">${[52,61,58,70,66,74,80,62,69,77,83,71,88].map((h,i)=>`<u class="${i>5?"f2":""}" style="height:${h}%"></u>`).join("")}</div></div>
+ <div class="card side"><h3>Top debtors</h3><table><tr><td>Ridgeway University</td><td class="r">£6,188</td></tr><tr><td>Stirling Consulting</td><td class="r">£4,950</td></tr><tr><td>Harlow Dental Group</td><td class="r">£3,120</td></tr><tr><td>Northgate Lettings</td><td class="r">£2,460</td></tr><tr><td>Calder Motors</td><td class="r">£1,875</td></tr><tr><td>Fenwick Estates</td><td class="r">£1,240</td></tr></table></div></div>`; }
+</script></body></html>

@@ -1,0 +1,21 @@
+<!doctype html>
+<!-- The stage the screen recording sits in: backdrop, window, footer marker, wordmark.
+     hole=1 renders the cover laid OVER the video by the assembler (render with a transparent
+     background): the backdrop with a rounded hole where the window is, the window's shadow
+     and edge, and the footer. One cover per part.
+     Query: n, of, partname, hole=1 | img (window image, previews only), caption (previews only) -->
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="system.css"><style>
+  body.hole, body.hole html { background: transparent; }
+  body.hole .backdrop { -webkit-mask: linear-gradient(#000 0 0), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1920' height='1080'><rect x='128' y='44' width='1664' height='936' rx='14'/></svg>"); -webkit-mask-composite: xor; mask-composite: exclude; }
+  body.hole .window { background: transparent; }
+</style></head><body>
+  <div class="backdrop"></div>
+  <div class="window"><img id="img"></div>
+  <div class="footer"><div class="marker"><div class="ticks" id="ticks"></div><span id="partname"></span></div>
+    <div class="caption" id="caption"></div>
+    <img class="mark" src="../assets/appdraft-wordmark-white.svg"></div>
+<script src="system.js"></script><script>
+  if (P("hole")) { document.body.classList.add("hole"); document.documentElement.style.background = "transparent"; document.getElementById("img").remove(); }
+  else if (P("img")) document.getElementById("img").src = P("img");
+  ticks(document.getElementById("ticks"), N("n", 1), N("of", 4)); fill("partname", "partname", ""); fill("caption", "caption");
+</script></body></html>

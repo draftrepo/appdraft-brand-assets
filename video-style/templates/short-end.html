@@ -1,0 +1,23 @@
+<!doctype html>
+<!-- Short end card, 1080x1350. Query: len (4.5) -->
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="system.css"><style>
+  html, body { width: 1080px; height: 1350px; }
+  .logo { position: absolute; left: 72px; top: 438px; width: 300px; }
+  .rail { position: absolute; top: 560px; height: 2px; background: rgba(243,246,248,.30); }
+  .rail.l { left: 0; width: 448px; transform-origin: left center; animation: drawx .9s var(--draw) .2s both; }
+  .rail.r { left: 632px; right: 0; transform-origin: right center; animation: drawx .9s var(--draw) .2s both; }
+  .join { position: absolute; top: 559px; left: 448px; width: 184px; height: 4px; border-radius: 2px; background: var(--teal); transform-origin: center; animation: drawx .6s var(--move) .8s both; }
+  .text { position: absolute; left: 72px; top: 620px; }
+  .d { font-weight: 600; font-size: 104px; line-height: 1.04; letter-spacing: -.038em; }
+  .url { margin: 40px 0 0 4px; font-weight: 600; font-size: 46px; letter-spacing: -.015em; color: var(--teal); }
+</style></head><body>
+  <div class="backdrop"></div>
+  <img class="logo a-up" style="--d:.35s" src="../assets/appdraft-wordmark-white.svg">
+  <div class="rail l"></div><div class="rail r"></div><div class="join"></div>
+  <div class="text"><div class="d" id="title"></div><div class="url a-up" style="--d:1.7s">appdraft.com</div></div>
+  <div class="black" id="black"></div>
+<script src="system.js"></script><script>
+  const len = N("len", 4.5);
+  lines(document.getElementById("title"), "Getting the most|out of Salesforce", 1.0, .11);
+  blackout(len, .35, .6);
+</script></body></html>
